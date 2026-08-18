@@ -12,6 +12,11 @@ namespace ETEngine.TutorialSystem
     public class TutorialMachine : MonoBehaviour
     {
         [SerializeField] private TutorialStep[] tutorialSteps;
+        public TutorialStep[] TutorialSteps
+        {
+            get => tutorialSteps;
+            set => tutorialSteps = value;
+        }
         [SerializeField] private bool autoFindAllTargetsOnInit = true;
         [SerializeField] private TutorialTarget[] tutorialTargets;
         private bool _isIgnoreTutorialFeedback = false;
