@@ -9,9 +9,12 @@ namespace ETEngine.TutorialSystem
     public struct TutorialStep
     {
         public TutorialTarget target;
-        public bool showHighlight;
-        public bool showStandout;
-        public bool showSpotLight;
+        [FormerlySerializedAs("showHighlight")]
+        public bool animateTarget;
+        [FormerlySerializedAs("showStandout")]
+        public bool highlightTarget;
+        [FormerlySerializedAs("showSpotLight")]
+        public bool spotLightTarget;
         public float spotLightRadius;
         public bool showText;
         public string instructionText;

@@ -56,13 +56,13 @@ namespace ETEngine.TutorialSystem
             EnsureBackdropSetup();
             ShowBackdrop(false);
         }
-        public void ShowStandout(TutorialTarget target)
+        public void ShowHighlight(TutorialTarget target)
         {
             if (target == null) return;
-            ShowStandout(target.gameObject);
+            ShowHighlight(target.gameObject);
         }
 
-        public void ShowStandout(GameObject target)
+        public void ShowHighlight(GameObject target)
         {
             if (target == null) return;
             if (_currentTarget != null && _currentTarget != target)

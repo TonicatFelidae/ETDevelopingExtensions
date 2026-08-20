@@ -11,6 +11,8 @@ namespace ETEngine.TutorialSystem
     /// </summary>
     public class TutorialMachine : MonoBehaviour
     {
+        [SerializeField] private TutorialSystemConfig _tutorialSystemConfig;
+        public TutorialSystemConfig TutorialSystemConfig => _tutorialSystemConfig;
         [SerializeField] private TutorialStep[] tutorialSteps;
         public TutorialStep[] TutorialSteps
         {
@@ -187,17 +189,18 @@ namespace ETEngine.TutorialSystem
             }
             var currentStep = tutorialSteps[index];
 
-            if (currentStep.showHighlight && currentStep.target != null)
+            if (currentStep.animateTarget && currentStep.target != null)
+            {
+                currentStep.target.AnimateTarget();
+            }
+
+            if (currentStep.highlightTarget && currentStep.target != null)
             {
                 currentStep.target.HighlightTarget();
+                ApplyTutorialTargetMaterial(currentStep.target.gameObject);
             }
 
-            if (currentStep.showStandout && currentStep.target != null)
-            {
-                currentStep.target.StandOutTarget();
-            }
-
-            if (currentStep.showSpotLight && currentStep.target != null)
+            if (currentStep.spotLightTarget && currentStep.target != null)
             {
                 currentStep.target.SpotlightTarget(currentStep.spotLightRadius);
             }
@@ -335,6 +338,27 @@ namespace ETEngine.TutorialSystem
             if (_nextStepTriggerType == NextStepTriggerType.TouchTutorialTarget)
             {
                 NextStep();
+            }
+        }
+        public void ApplyTutorialTargetMaterial(GameObject targetGO)
+        {
+            if (targetGO == null || _tutorialSystemConfig == null) return;
+
+            Material mat = _tutorialSystemConfig.targetMaterial != null ? _tutorialSystemConfig.targetMaterial : _tutorialSystemConfig.maskMaterial;
+            if (mat == null) return;
+
+            var target = targetGO.GetComponent<TutorialTarget>();
+            if (target != null)
+            {
+                target.ApplyMaterial(mat);
+            }
+            else
+            {
+                var image = targetGO.GetComponent<UnityEngine.UI.Image>();
+                if (image != null)
+                {
+                    image.material = mat;
+                }
             }
         }
 

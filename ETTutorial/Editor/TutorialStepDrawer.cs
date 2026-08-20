@@ -15,9 +15,9 @@ namespace ETEngine.TutorialSystem
             float spacing = EditorGUIUtility.standardVerticalSpacing;
 
             SerializedProperty targetProp = property.FindPropertyRelative("target");
-            SerializedProperty showHighlightProp = property.FindPropertyRelative("showHighlight");
-            SerializedProperty showStandoutProp = property.FindPropertyRelative("showStandout");
-            SerializedProperty showSpotLightProp = property.FindPropertyRelative("showSpotLight");
+            SerializedProperty animateTargetProp = property.FindPropertyRelative("animateTarget");
+            SerializedProperty highlightTargetProp = property.FindPropertyRelative("highlightTarget");
+            SerializedProperty spotLightTargetProp = property.FindPropertyRelative("spotLightTarget");
             SerializedProperty spotLightRadiusProp = property.FindPropertyRelative("spotLightRadius");
             SerializedProperty showTextProp = property.FindPropertyRelative("showText");
             SerializedProperty instructionTextProp = property.FindPropertyRelative("instructionText");
@@ -37,11 +37,11 @@ namespace ETEngine.TutorialSystem
 
             DrawField(ref rect, targetProp, spacing);
 
-            DrawField(ref rect, showHighlightProp, spacing);
-            DrawField(ref rect, showStandoutProp, spacing);
-            DrawField(ref rect, showSpotLightProp, spacing);
+            DrawField(ref rect, animateTargetProp, spacing);
+            DrawField(ref rect, highlightTargetProp, spacing);
+            DrawField(ref rect, spotLightTargetProp, spacing);
 
-            if (showSpotLightProp != null && showSpotLightProp.boolValue)
+            if (spotLightTargetProp != null && spotLightTargetProp.boolValue)
             {
                 DrawField(ref rect, spotLightRadiusProp, spacing);
             }
@@ -98,12 +98,12 @@ namespace ETEngine.TutorialSystem
             float height = 0f;
 
             height += GetFieldHeight(property.FindPropertyRelative("target"), spacing);
-            height += GetFieldHeight(property.FindPropertyRelative("showHighlight"), spacing);
-            height += GetFieldHeight(property.FindPropertyRelative("showStandout"), spacing);
-            height += GetFieldHeight(property.FindPropertyRelative("showSpotLight"), spacing);
+            height += GetFieldHeight(property.FindPropertyRelative("animateTarget"), spacing);
+            height += GetFieldHeight(property.FindPropertyRelative("highlightTarget"), spacing);
+            height += GetFieldHeight(property.FindPropertyRelative("spotLightTarget"), spacing);
 
-            SerializedProperty showSpotLightProp = property.FindPropertyRelative("showSpotLight");
-            if (showSpotLightProp != null && showSpotLightProp.boolValue)
+            SerializedProperty spotLightTargetProp = property.FindPropertyRelative("spotLightTarget");
+            if (spotLightTargetProp != null && spotLightTargetProp.boolValue)
             {
                 height += GetFieldHeight(property.FindPropertyRelative("spotLightRadius"), spacing);
             }
