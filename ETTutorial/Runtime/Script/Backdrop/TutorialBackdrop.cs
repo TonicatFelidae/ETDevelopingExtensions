@@ -28,6 +28,7 @@ namespace ETEngine.TutorialSystem
         private GraphicRaycaster _targetRaycaster;
         private CanvasGroup _backdropCanvasGroup;
         private Tween _fadeTween;
+        private float _currentAlpha = 1f;
         private bool _isSpotLightActive;
         private float _spotLightRadius;
 
@@ -185,6 +186,7 @@ namespace ETEngine.TutorialSystem
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_currentTarget.GetComponent<RectTransform>());
                 _currentTarget = null;
             }
+            _currentAlpha = 1f;
             ShowBackdrop(false);
         }
         void Update()
@@ -330,13 +332,14 @@ namespace ETEngine.TutorialSystem
             _fadeTween?.Kill();
 
             float fadeDuration = show ? _fadeInTime : _fadeOutTime;
+            float targetAlpha = show ? _currentAlpha : 0f;
 
             if (fadeDuration <= 0f || _backdropCanvasGroup == null)
             {
                 backdropImage.gameObject.SetActive(show);
                 if (_backdropCanvasGroup != null)
                 {
-                    _backdropCanvasGroup.alpha = show ? 1f : 0f;
+                    _backdropCanvasGroup.alpha = targetAlpha;
                     _backdropCanvasGroup.blocksRaycasts = show;
                     _backdropCanvasGroup.interactable = show;
                 }
@@ -348,7 +351,7 @@ namespace ETEngine.TutorialSystem
                 backdropImage.gameObject.SetActive(true);
                 _backdropCanvasGroup.blocksRaycasts = true;
                 _backdropCanvasGroup.interactable = true;
-                _fadeTween = _backdropCanvasGroup.DOFade(1f, fadeDuration);
+                _fadeTween = _backdropCanvasGroup.DOFade(targetAlpha, fadeDuration);
             }
             else
             {
@@ -366,6 +369,15 @@ namespace ETEngine.TutorialSystem
         }
         public void ForceSetup(float alpha, bool blocksRaycasts, bool interactable)
         {
+            _currentAlpha = Mathf.Clamp01(alpha);
+
+            EnsureBackdropSetup();
+            gameObject.SetActive(true);
+            if (backdropCanvas != null)
+            {
+                backdropCanvas.enabled = true;
+            }
+
             if (backdropImage == null)
             {
                 return;
@@ -373,10 +385,11 @@ namespace ETEngine.TutorialSystem
             backdropImage.gameObject.SetActive(true);
 
             EnsureBackdropCanvasGroup();
+            _fadeTween?.Kill();
 
             if (_backdropCanvasGroup != null)
             {
-                _backdropCanvasGroup.alpha = Mathf.Clamp01(alpha);
+                _backdropCanvasGroup.alpha = _currentAlpha;
                 _backdropCanvasGroup.blocksRaycasts = blocksRaycasts;
                 _backdropCanvasGroup.interactable = interactable;
             }
@@ -398,6 +411,34 @@ namespace ETEngine.TutorialSystem
 
             _tutorialText.text = text;
             _tutorialText.gameObject.SetActive(true);
+        }
+
+        public void DisableBackdrop()
+        {
+            HideStandout();
+            SetTutorialText(false, null);
+            _fadeTween?.Kill();
+            _fadeTween = null;
+            _currentAlpha = 1f;
+
+            if (_backdropCanvasGroup != null)
+            {
+                _backdropCanvasGroup.alpha = 0f;
+                _backdropCanvasGroup.blocksRaycasts = false;
+                _backdropCanvasGroup.interactable = false;
+            }
+
+            if (backdropImage != null)
+            {
+                backdropImage.gameObject.SetActive(false);
+            }
+
+            if (backdropCanvas != null)
+            {
+                backdropCanvas.enabled = false;
+            }
+
+            gameObject.SetActive(false);
         }
 
         private void OnDestroy()

@@ -12,6 +12,7 @@ namespace ETEngine.TutorialSystem
         [FormerlySerializedAs("showHighlight")]
         public bool animateTarget;
         public bool useBackdrop;
+        [Range(0f, 1f)]
         public float backdropAlpha;
         [FormerlySerializedAs("showStandout")]
         public bool highlightTarget;

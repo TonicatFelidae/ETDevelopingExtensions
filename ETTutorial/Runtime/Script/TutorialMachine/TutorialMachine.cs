@@ -48,6 +48,7 @@ namespace ETEngine.TutorialSystem
             if (!TutorialDataInvalid && isFirstTime && !skipTutorial)
             {
                 Debug.Log("[TutorialMachine] Tutorial data is valid. Activating tutorial.");
+                this.enabled = true;
                 _currentStepIndex = 0;
                 _isTutorialCompleted = false;
                 ActivateStep(_currentStepIndex);
@@ -197,6 +198,10 @@ namespace ETEngine.TutorialSystem
             {
                 TutorialBackdrop.Instance.ForceSetup(currentStep.backdropAlpha, true, false);
             }
+            else if (!currentStep.useBackdrop && TutorialBackdrop.Instance != null)
+            {
+                TutorialBackdrop.Instance.ForceSetup(0f, false, false);
+            }
 
             if (currentStep.highlightTarget && currentStep.target != null)
             {
@@ -315,26 +320,29 @@ namespace ETEngine.TutorialSystem
                 StopCoroutine(_transitionCoroutine);
                 _transitionCoroutine = null;
             }
+            if (_delayTriggerCoroutine != null)
+            {
+                StopCoroutine(_delayTriggerCoroutine);
+                _delayTriggerCoroutine = null;
+            }
             CleanUpCurrentStepListeners();
             DisableAllSteps();
             ClearActivePopup();
             if (TutorialBackdrop.Instance != null)
             {
-                TutorialBackdrop.Instance.SetTutorialText(false, null);
-                TutorialBackdrop.Instance.HideStandout();
+                TutorialBackdrop.Instance.DisableBackdrop();
             }
             _isTutorialCompleted = true;
             onTutorialCompleted?.Invoke();
             this.enabled = false;
         }
 
-        private void CompleteTutorial()
+        public void CompleteTutorial()
         {
             if (_isTutorialCompleted)
             {
                 return;
             }
-            onTutorialCompleted?.Invoke(); // Invoke the only event that happen when done tutorial
             SkipTutorial();
         }
 
@@ -407,7 +415,6 @@ namespace ETEngine.TutorialSystem
             CleanUpCurrentStepListeners();
         }
     }
-
     public enum OnTutorialStepComplete
     {
         None,
