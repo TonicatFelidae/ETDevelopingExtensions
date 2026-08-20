@@ -33,6 +33,7 @@ namespace ETEngine.TutorialSystem
         public UnityEvent onCompletedFeedback;
         public NextStepTriggerType nextStepTriggerType;
         public float nextStepTriggerDelay;
+        public float targetNumber;
         public bool transitionDelay;
         public BackdropType transitionDelayBackdropType;
         public float transitionDelayDuration;

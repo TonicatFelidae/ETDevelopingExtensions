@@ -254,6 +254,11 @@ namespace ETEngine.TutorialSystem
             {
                 _delayTriggerCoroutine = StartCoroutine(DelayTriggerNextStep(currentStep.nextStepTriggerDelay));
             }
+            else if (_nextStepTriggerType == NextStepTriggerType.TargetNumberLargerThanOrEqualTo ||
+                     _nextStepTriggerType == NextStepTriggerType.TargetNumberLessThanOrEqualTo)
+            {
+                CheckTargetNumberTrigger();
+            }
         }
 
         private IEnumerator DelayTriggerNextStep(float delay)
@@ -378,6 +383,40 @@ namespace ETEngine.TutorialSystem
                     NextStep();
                 }
             }
+            else if (_nextStepTriggerType == NextStepTriggerType.TargetNumberLargerThanOrEqualTo ||
+                     _nextStepTriggerType == NextStepTriggerType.TargetNumberLessThanOrEqualTo)
+            {
+                CheckTargetNumberTrigger();
+            }
+        }
+
+        private void CheckTargetNumberTrigger()
+        {
+            if (_isTutorialCompleted || TutorialDataInvalid || TutorialStepOutOfBounds || _currentStepIndex < 0)
+            {
+                return;
+            }
+
+            var currentStep = tutorialSteps[_currentStepIndex];
+            if (currentStep.target == null)
+            {
+                return;
+            }
+
+            if (_nextStepTriggerType == NextStepTriggerType.TargetNumberLargerThanOrEqualTo)
+            {
+                if (currentStep.target.TargetNumber >= currentStep.targetNumber)
+                {
+                    NextStep();
+                }
+            }
+            else if (_nextStepTriggerType == NextStepTriggerType.TargetNumberLessThanOrEqualTo)
+            {
+                if (currentStep.target.TargetNumber <= currentStep.targetNumber)
+                {
+                    NextStep();
+                }
+            }
         }
 
         private void OnTargetClicked()
@@ -455,6 +494,9 @@ namespace ETEngine.TutorialSystem
         TouchTutorialTarget,
         TouchAnyWhere,
         Delay,
+        TargetNumberLargerThanOrEqualTo,
+        TargetNumberLessThanOrEqualTo,
+
     }
     public enum BackdropType
     {

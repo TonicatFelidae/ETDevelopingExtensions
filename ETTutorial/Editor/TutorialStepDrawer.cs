@@ -32,6 +32,7 @@ namespace ETEngine.TutorialSystem
             SerializedProperty popupOffsetProp = property.FindPropertyRelative("popupOffset");
             SerializedProperty nextStepTriggerTypeProp = property.FindPropertyRelative("nextStepTriggerType");
             SerializedProperty nextStepTriggerDelayProp = property.FindPropertyRelative("nextStepTriggerDelay");
+            SerializedProperty targetNumberProp = property.FindPropertyRelative("targetNumber");
             SerializedProperty onCompletedProp = property.FindPropertyRelative("onCompleted");
             SerializedProperty onCompletedFeedbackProp = property.FindPropertyRelative("onCompletedFeedback");
             SerializedProperty transitionDelayProp = property.FindPropertyRelative("transitionDelay");
@@ -88,9 +89,18 @@ namespace ETEngine.TutorialSystem
             }
 
             DrawField(ref rect, nextStepTriggerTypeProp, spacing);
-            if (nextStepTriggerTypeProp != null && (NextStepTriggerType)nextStepTriggerTypeProp.enumValueIndex == NextStepTriggerType.Delay)
+            if (nextStepTriggerTypeProp != null)
             {
-                DrawField(ref rect, nextStepTriggerDelayProp, spacing);
+                var triggerType = (NextStepTriggerType)nextStepTriggerTypeProp.enumValueIndex;
+                if (triggerType == NextStepTriggerType.Delay)
+                {
+                    DrawField(ref rect, nextStepTriggerDelayProp, spacing);
+                }
+                else if (triggerType == NextStepTriggerType.TargetNumberLargerThanOrEqualTo ||
+                         triggerType == NextStepTriggerType.TargetNumberLessThanOrEqualTo)
+                {
+                    DrawField(ref rect, targetNumberProp, spacing);
+                }
             }
 
             DrawField(ref rect, onCompletedProp, spacing);
@@ -176,9 +186,18 @@ namespace ETEngine.TutorialSystem
             height += GetFieldHeight(property.FindPropertyRelative("nextStepTriggerType"), spacing);
 
             SerializedProperty nextStepTriggerTypeProp = property.FindPropertyRelative("nextStepTriggerType");
-            if (nextStepTriggerTypeProp != null && (NextStepTriggerType)nextStepTriggerTypeProp.enumValueIndex == NextStepTriggerType.Delay)
+            if (nextStepTriggerTypeProp != null)
             {
-                height += GetFieldHeight(property.FindPropertyRelative("nextStepTriggerDelay"), spacing);
+                var triggerType = (NextStepTriggerType)nextStepTriggerTypeProp.enumValueIndex;
+                if (triggerType == NextStepTriggerType.Delay)
+                {
+                    height += GetFieldHeight(property.FindPropertyRelative("nextStepTriggerDelay"), spacing);
+                }
+                else if (triggerType == NextStepTriggerType.TargetNumberLargerThanOrEqualTo ||
+                         triggerType == NextStepTriggerType.TargetNumberLessThanOrEqualTo)
+                {
+                    height += GetFieldHeight(property.FindPropertyRelative("targetNumber"), spacing);
+                }
             }
 
             SerializedProperty onCompletedProp = property.FindPropertyRelative("onCompleted");

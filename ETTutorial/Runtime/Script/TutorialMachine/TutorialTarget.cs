@@ -4,6 +4,8 @@ namespace ETEngine.TutorialSystem
 {
     public abstract class TutorialTarget : MonoBehaviour
     {
+        public abstract ITutorialNumberTarget TutorialNumberTarget { get; }
+        public float TargetNumber => TutorialNumberTarget != null ? TutorialNumberTarget.TargetNumber : 0f;
 
         public abstract void AnimateTarget();
         public abstract void HighlightTarget();
