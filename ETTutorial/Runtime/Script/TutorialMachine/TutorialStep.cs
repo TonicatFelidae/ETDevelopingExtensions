@@ -11,6 +11,8 @@ namespace ETEngine.TutorialSystem
         public TutorialTarget target;
         [FormerlySerializedAs("showHighlight")]
         public bool animateTarget;
+        public bool targetUnclickableDelay;
+        public float targetUnclickableDuration;
         public bool useBackdrop;
         [Range(0f, 1f)]
         public float backdropAlpha;

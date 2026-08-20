@@ -30,6 +30,7 @@ namespace ETEngine.TutorialSystem
         private NextStepTriggerType _nextStepTriggerType;
         private Coroutine _transitionCoroutine;
         private Coroutine _delayTriggerCoroutine;
+        private Coroutine _targetUnclickableCoroutine;
         public UnityEvent onTutorialStepComplete;
         public UnityEvent onTutorialCompleted;
         public void Init() => Init(true, false, false);
@@ -194,6 +195,12 @@ namespace ETEngine.TutorialSystem
                 currentStep.target.AnimateTarget();
             }
 
+            if (currentStep.targetUnclickableDelay && currentStep.targetUnclickableDuration > 0f && currentStep.target != null)
+            {
+                currentStep.target.SetInteractable(false);
+                _targetUnclickableCoroutine = StartCoroutine(EnableTargetClickAfterDelay(currentStep.target, currentStep.targetUnclickableDuration));
+            }
+
             if (currentStep.useBackdrop && TutorialBackdrop.Instance != null)
             {
                 TutorialBackdrop.Instance.ForceSetup(currentStep.backdropAlpha, true, false);
@@ -259,6 +266,19 @@ namespace ETEngine.TutorialSystem
             NextStep();
         }
 
+        private IEnumerator EnableTargetClickAfterDelay(TutorialTarget target, float duration)
+        {
+            if (duration > 0f)
+            {
+                yield return new WaitForSeconds(duration);
+            }
+            _targetUnclickableCoroutine = null;
+            if (target != null)
+            {
+                target.SetInteractable(true);
+            }
+        }
+
         public void DisableAllSteps()
         {
             if (tutorialSteps == null) return;
@@ -268,6 +288,7 @@ namespace ETEngine.TutorialSystem
 
                 if (step.target != null)
                 {
+                    step.target.SetInteractable(true);
                     step.target.DisableTutorial();
                 }
             }
@@ -396,11 +417,18 @@ namespace ETEngine.TutorialSystem
                 _delayTriggerCoroutine = null;
             }
 
+            if (_targetUnclickableCoroutine != null)
+            {
+                StopCoroutine(_targetUnclickableCoroutine);
+                _targetUnclickableCoroutine = null;
+            }
+
             if (_currentStepIndex >= 0 && tutorialSteps != null && _currentStepIndex < tutorialSteps.Length)
             {
                 var step = tutorialSteps[_currentStepIndex];
                 if (step.target != null)
                 {
+                    step.target.SetInteractable(true);
                     var button = step.target.GetComponent<Button>();
                     if (button != null)
                     {

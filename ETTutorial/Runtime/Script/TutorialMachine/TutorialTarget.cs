@@ -13,5 +13,6 @@ namespace ETEngine.TutorialSystem
 
         public virtual void ApplyMaterial(Material material) { }
         public virtual void RestoreMaterial() { }
+        public virtual void SetInteractable(bool interactable) { }
     }
 }

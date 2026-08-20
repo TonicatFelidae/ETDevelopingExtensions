@@ -16,6 +16,8 @@ namespace ETEngine.TutorialSystem
 
             SerializedProperty targetProp = property.FindPropertyRelative("target");
             SerializedProperty animateTargetProp = property.FindPropertyRelative("animateTarget");
+            SerializedProperty targetUnclickableDelayProp = property.FindPropertyRelative("targetUnclickableDelay");
+            SerializedProperty targetUnclickableDurationProp = property.FindPropertyRelative("targetUnclickableDuration");
             SerializedProperty useBackdropProp = property.FindPropertyRelative("useBackdrop");
             SerializedProperty backdropAlphaProp = property.FindPropertyRelative("backdropAlpha");
             SerializedProperty highlightTargetProp = property.FindPropertyRelative("highlightTarget");
@@ -41,6 +43,13 @@ namespace ETEngine.TutorialSystem
             DrawField(ref rect, targetProp, spacing);
 
             DrawField(ref rect, animateTargetProp, spacing);
+            DrawField(ref rect, targetUnclickableDelayProp, spacing);
+
+            if (targetUnclickableDelayProp != null && targetUnclickableDelayProp.boolValue)
+            {
+                DrawField(ref rect, targetUnclickableDurationProp, spacing);
+            }
+
             DrawField(ref rect, useBackdropProp, spacing);
 
             if (useBackdropProp != null && useBackdropProp.boolValue)
@@ -114,6 +123,14 @@ namespace ETEngine.TutorialSystem
 
             height += GetFieldHeight(property.FindPropertyRelative("target"), spacing);
             height += GetFieldHeight(property.FindPropertyRelative("animateTarget"), spacing);
+            height += GetFieldHeight(property.FindPropertyRelative("targetUnclickableDelay"), spacing);
+
+            SerializedProperty targetUnclickableDelayProp = property.FindPropertyRelative("targetUnclickableDelay");
+            if (targetUnclickableDelayProp != null && targetUnclickableDelayProp.boolValue)
+            {
+                height += GetFieldHeight(property.FindPropertyRelative("targetUnclickableDuration"), spacing);
+            }
+
             height += GetFieldHeight(property.FindPropertyRelative("useBackdrop"), spacing);
 
             SerializedProperty useBackdropProp = property.FindPropertyRelative("useBackdrop");
