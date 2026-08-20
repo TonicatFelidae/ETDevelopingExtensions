@@ -146,6 +146,12 @@ namespace ETEngine.TutorialSystem
 
             if (_currentTarget != null)
             {
+                var tutorialTarget = _currentTarget.GetComponent<TutorialTarget>();
+                if (tutorialTarget != null)
+                {
+                    tutorialTarget.RestoreMaterial();
+                }
+
                 bool shouldRemoveCanvas = _targetCanvas != null && !_hadCanvas;
 
                 // Remove GraphicRaycaster first when we plan to remove Canvas,
