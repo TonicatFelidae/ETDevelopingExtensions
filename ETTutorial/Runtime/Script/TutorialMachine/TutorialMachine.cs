@@ -12,21 +12,24 @@ namespace ETEngine.TutorialSystem
     public class TutorialMachine : MonoBehaviour
     {
         [SerializeField] private TutorialSystemConfig _tutorialSystemConfig;
-        public TutorialSystemConfig TutorialSystemConfig => _tutorialSystemConfig;
+        public TutorialSystemConfig TutorialSystemConfig
+        {
+            get => _tutorialSystemConfig;
+            set => _tutorialSystemConfig = value;
+        }
         [SerializeField] private TutorialStep[] tutorialSteps;
         public TutorialStep[] TutorialSteps
         {
             get => tutorialSteps;
             set => tutorialSteps = value;
         }
-        [SerializeField] private bool autoFindAllTargetsOnInit = true;
-        [SerializeField] private TutorialTarget[] tutorialTargets;
         private bool _isIgnoreTutorialFeedback = false;
         private bool _isTutorialCompleted = false;
         private int _currentStepIndex = -1;
         private GameObject _activePopup;
         private NextStepTriggerType _nextStepTriggerType;
         private Coroutine _transitionCoroutine;
+        private Coroutine _delayTriggerCoroutine;
         public UnityEvent onTutorialStepComplete;
         public UnityEvent onTutorialCompleted;
         public void Init() => Init(true, false, false);
@@ -41,10 +44,6 @@ namespace ETEngine.TutorialSystem
             }
             _isIgnoreTutorialFeedback = ignoreTutorialFeedback;
             CleanUpCurrentStepListeners();
-            if (autoFindAllTargetsOnInit)
-            {
-                tutorialTargets = GetComponentsInChildren<TutorialTarget>(true);
-            }
 
             if (!TutorialDataInvalid && isFirstTime && !skipTutorial)
             {
@@ -194,6 +193,11 @@ namespace ETEngine.TutorialSystem
                 currentStep.target.AnimateTarget();
             }
 
+            if (currentStep.useBackdrop && TutorialBackdrop.Instance != null)
+            {
+                TutorialBackdrop.Instance.ForceSetup(currentStep.backdropAlpha, true, false);
+            }
+
             if (currentStep.highlightTarget && currentStep.target != null)
             {
                 currentStep.target.HighlightTarget();
@@ -234,6 +238,20 @@ namespace ETEngine.TutorialSystem
                     button.onClick.AddListener(OnTargetClicked);
                 }
             }
+            else if (_nextStepTriggerType == NextStepTriggerType.Delay)
+            {
+                _delayTriggerCoroutine = StartCoroutine(DelayTriggerNextStep(currentStep.nextStepTriggerDelay));
+            }
+        }
+
+        private IEnumerator DelayTriggerNextStep(float delay)
+        {
+            if (delay > 0f)
+            {
+                yield return new WaitForSeconds(delay);
+            }
+            _delayTriggerCoroutine = null;
+            NextStep();
         }
 
         public void DisableAllSteps()
@@ -364,6 +382,12 @@ namespace ETEngine.TutorialSystem
 
         private void CleanUpCurrentStepListeners()
         {
+            if (_delayTriggerCoroutine != null)
+            {
+                StopCoroutine(_delayTriggerCoroutine);
+                _delayTriggerCoroutine = null;
+            }
+
             if (_currentStepIndex >= 0 && tutorialSteps != null && _currentStepIndex < tutorialSteps.Length)
             {
                 var step = tutorialSteps[_currentStepIndex];
@@ -395,6 +419,7 @@ namespace ETEngine.TutorialSystem
         None,
         TouchTutorialTarget,
         TouchAnyWhere,
+        Delay,
     }
     public enum BackdropType
     {

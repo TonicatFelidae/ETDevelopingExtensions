@@ -11,6 +11,8 @@ namespace ETEngine.TutorialSystem
         public TutorialTarget target;
         [FormerlySerializedAs("showHighlight")]
         public bool animateTarget;
+        public bool useBackdrop;
+        public float backdropAlpha;
         [FormerlySerializedAs("showStandout")]
         public bool highlightTarget;
         [FormerlySerializedAs("showSpotLight")]
@@ -27,6 +29,7 @@ namespace ETEngine.TutorialSystem
         public OnTutorialStepComplete onCompleted;
         public UnityEvent onCompletedFeedback;
         public NextStepTriggerType nextStepTriggerType;
+        public float nextStepTriggerDelay;
         public bool transitionDelay;
         public BackdropType transitionDelayBackdropType;
         public float transitionDelayDuration;

@@ -16,6 +16,8 @@ namespace ETEngine.TutorialSystem
 
             SerializedProperty targetProp = property.FindPropertyRelative("target");
             SerializedProperty animateTargetProp = property.FindPropertyRelative("animateTarget");
+            SerializedProperty useBackdropProp = property.FindPropertyRelative("useBackdrop");
+            SerializedProperty backdropAlphaProp = property.FindPropertyRelative("backdropAlpha");
             SerializedProperty highlightTargetProp = property.FindPropertyRelative("highlightTarget");
             SerializedProperty spotLightTargetProp = property.FindPropertyRelative("spotLightTarget");
             SerializedProperty spotLightRadiusProp = property.FindPropertyRelative("spotLightRadius");
@@ -27,6 +29,7 @@ namespace ETEngine.TutorialSystem
             SerializedProperty overlayProp = property.FindPropertyRelative("overlay");
             SerializedProperty popupOffsetProp = property.FindPropertyRelative("popupOffset");
             SerializedProperty nextStepTriggerTypeProp = property.FindPropertyRelative("nextStepTriggerType");
+            SerializedProperty nextStepTriggerDelayProp = property.FindPropertyRelative("nextStepTriggerDelay");
             SerializedProperty onCompletedProp = property.FindPropertyRelative("onCompleted");
             SerializedProperty onCompletedFeedbackProp = property.FindPropertyRelative("onCompletedFeedback");
             SerializedProperty transitionDelayProp = property.FindPropertyRelative("transitionDelay");
@@ -38,7 +41,14 @@ namespace ETEngine.TutorialSystem
             DrawField(ref rect, targetProp, spacing);
 
             DrawField(ref rect, animateTargetProp, spacing);
-            DrawField(ref rect, highlightTargetProp, spacing);
+            DrawField(ref rect, useBackdropProp, spacing);
+
+            if (useBackdropProp != null && useBackdropProp.boolValue)
+            {
+                DrawField(ref rect, backdropAlphaProp, spacing);
+                DrawField(ref rect, highlightTargetProp, spacing);
+            }
+
             DrawField(ref rect, spotLightTargetProp, spacing);
 
             if (spotLightTargetProp != null && spotLightTargetProp.boolValue)
@@ -69,6 +79,11 @@ namespace ETEngine.TutorialSystem
             }
 
             DrawField(ref rect, nextStepTriggerTypeProp, spacing);
+            if (nextStepTriggerTypeProp != null && (NextStepTriggerType)nextStepTriggerTypeProp.enumValueIndex == NextStepTriggerType.Delay)
+            {
+                DrawField(ref rect, nextStepTriggerDelayProp, spacing);
+            }
+
             DrawField(ref rect, onCompletedProp, spacing);
 
             if (onCompletedProp != null && (OnTutorialStepComplete)onCompletedProp.enumValueIndex == OnTutorialStepComplete.Feedback)
@@ -99,7 +114,15 @@ namespace ETEngine.TutorialSystem
 
             height += GetFieldHeight(property.FindPropertyRelative("target"), spacing);
             height += GetFieldHeight(property.FindPropertyRelative("animateTarget"), spacing);
-            height += GetFieldHeight(property.FindPropertyRelative("highlightTarget"), spacing);
+            height += GetFieldHeight(property.FindPropertyRelative("useBackdrop"), spacing);
+
+            SerializedProperty useBackdropProp = property.FindPropertyRelative("useBackdrop");
+            if (useBackdropProp != null && useBackdropProp.boolValue)
+            {
+                height += GetFieldHeight(property.FindPropertyRelative("backdropAlpha"), spacing);
+                height += GetFieldHeight(property.FindPropertyRelative("highlightTarget"), spacing);
+            }
+
             height += GetFieldHeight(property.FindPropertyRelative("spotLightTarget"), spacing);
 
             SerializedProperty spotLightTargetProp = property.FindPropertyRelative("spotLightTarget");
@@ -134,6 +157,12 @@ namespace ETEngine.TutorialSystem
             }
 
             height += GetFieldHeight(property.FindPropertyRelative("nextStepTriggerType"), spacing);
+
+            SerializedProperty nextStepTriggerTypeProp = property.FindPropertyRelative("nextStepTriggerType");
+            if (nextStepTriggerTypeProp != null && (NextStepTriggerType)nextStepTriggerTypeProp.enumValueIndex == NextStepTriggerType.Delay)
+            {
+                height += GetFieldHeight(property.FindPropertyRelative("nextStepTriggerDelay"), spacing);
+            }
 
             SerializedProperty onCompletedProp = property.FindPropertyRelative("onCompleted");
             height += GetFieldHeight(onCompletedProp, spacing);
