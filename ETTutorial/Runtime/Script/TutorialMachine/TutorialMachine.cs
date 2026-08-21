@@ -231,13 +231,39 @@ namespace ETEngine.TutorialSystem
             ClearActivePopup();
             if (currentStep.showPopup && currentStep.pp_popup != null)
             {
-                Vector3 popupPosition = transform.position + currentStep.popupOffset;
-                if (currentStep.target != null)
+                Transform parent = currentStep.pp_popup.transform.parent != null
+                    ? currentStep.pp_popup.transform.parent
+                    : transform;
+
+                _activePopup = Instantiate(currentStep.pp_popup, parent);
+
+                if (currentStep.target != null && currentStep.popupOffset != Vector3.zero)
                 {
-                    popupPosition = currentStep.target.transform.position + currentStep.popupOffset;
+                    _activePopup.transform.position = currentStep.target.transform.position + currentStep.popupOffset;
+                }
+                else if (currentStep.popupOffset != Vector3.zero)
+                {
+                    _activePopup.transform.position = transform.position + currentStep.popupOffset;
                 }
 
-                _activePopup = Instantiate(currentStep.pp_popup, popupPosition, Quaternion.identity, transform);
+                _activePopup.SetActive(true);
+
+                if (currentStep.useBackdrop && TutorialBackdrop.Instance != null)
+                {
+                    var canvas = _activePopup.GetComponent<Canvas>();
+                    if (canvas == null)
+                    {
+                        canvas = _activePopup.AddComponent<Canvas>();
+                    }
+                    canvas.overrideSorting = true;
+                    canvas.sortingOrder = 950;
+
+                    var raycaster = _activePopup.GetComponent<GraphicRaycaster>();
+                    if (raycaster == null)
+                    {
+                        _activePopup.AddComponent<GraphicRaycaster>();
+                    }
+                }
             }
 
             _nextStepTriggerType = currentStep.nextStepTriggerType;
