@@ -39,6 +39,11 @@ namespace ETEngine.TutorialSystem
         public float transitionDelayDuration;
         public bool transitionAfterDelay;
         public BackdropType transitionAfterDelayBackdropType;
+        public void SetTarget(TutorialTarget target)
+        {
+            this.target = target;
+
+        }
 
     }
 }
