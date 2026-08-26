@@ -31,6 +31,8 @@ namespace ETEngine.TutorialSystem
         public Vector3 popupOffset;
         public OnTutorialStepComplete onCompleted;
         public UnityEvent onCompletedFeedback;
+        [FormerlySerializedAs("disableCanvasOnTargetAfterComplete")]
+        public bool disableCanvasOverrideSortingOnTargetAfterComplete;
         public NextStepTriggerType nextStepTriggerType;
         public float nextStepTriggerDelay;
         public float targetNumber;

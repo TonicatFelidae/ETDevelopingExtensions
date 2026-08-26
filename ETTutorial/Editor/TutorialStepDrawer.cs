@@ -30,6 +30,7 @@ namespace ETEngine.TutorialSystem
             SerializedProperty showOverlayProp = property.FindPropertyRelative("showOverlay");
             SerializedProperty overlayProp = property.FindPropertyRelative("overlay");
             SerializedProperty popupOffsetProp = property.FindPropertyRelative("popupOffset");
+            SerializedProperty disableCanvasOverrideSortingOnTargetAfterCompleteProp = property.FindPropertyRelative("disableCanvasOverrideSortingOnTargetAfterComplete");
             SerializedProperty nextStepTriggerTypeProp = property.FindPropertyRelative("nextStepTriggerType");
             SerializedProperty nextStepTriggerDelayProp = property.FindPropertyRelative("nextStepTriggerDelay");
             SerializedProperty targetNumberProp = property.FindPropertyRelative("targetNumber");
@@ -87,6 +88,8 @@ namespace ETEngine.TutorialSystem
             {
                 DrawField(ref rect, overlayProp, spacing);
             }
+
+            DrawField(ref rect, disableCanvasOverrideSortingOnTargetAfterCompleteProp, spacing);
 
             DrawField(ref rect, nextStepTriggerTypeProp, spacing);
             if (nextStepTriggerTypeProp != null)
@@ -182,6 +185,8 @@ namespace ETEngine.TutorialSystem
             {
                 height += GetFieldHeight(property.FindPropertyRelative("overlay"), spacing);
             }
+
+            height += GetFieldHeight(property.FindPropertyRelative("disableCanvasOverrideSortingOnTargetAfterComplete"), spacing);
 
             height += GetFieldHeight(property.FindPropertyRelative("nextStepTriggerType"), spacing);
 
