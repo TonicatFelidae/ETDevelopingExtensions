@@ -179,21 +179,21 @@ namespace ETEngine.TutorialSystem
                 default:
                     break;
             }
-            if (currentStep.disableCanvasOverrideSortingOnTargetAfterComplete)
+            //if (currentStep.disableCanvasOverrideSortingOnTargetAfterComplete)
+            //{
+            if (currentStep.target != null)
             {
-                if (currentStep.target != null)
+                var canvas = currentStep.target.GetComponent<Canvas>();
+                if (canvas == null)
                 {
-                    var canvas = currentStep.target.GetComponent<Canvas>();
-                    if (canvas == null)
-                    {
-                        canvas = currentStep.target.GetComponentInChildren<Canvas>(true);
-                    }
-                    if (canvas != null)
-                    {
-                        canvas.overrideSorting = false;
-                    }
+                    canvas = currentStep.target.GetComponentInChildren<Canvas>(true);
+                }
+                if (canvas != null)
+                {
+                    canvas.overrideSorting = false;
                 }
             }
+            //}
         }
 
 
