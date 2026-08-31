@@ -41,6 +41,7 @@ namespace ETEngine.TutorialSystem
         void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
+            _tutorialText.gameObject.SetActive(false);
 
             if (backdropCanvas == null)
             {
