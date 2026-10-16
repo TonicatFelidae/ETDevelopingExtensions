@@ -503,7 +503,10 @@ namespace ETEngine.TutorialSystem
                 return;
             }
 
-            bool above = _textPlacement == TutorialTextPlacement.AboveTarget;
+            bool above = _textPlacement == TutorialTextPlacement.AboveTarget
+                || _textPlacement == TutorialTextPlacement.AboveTargetCentered;
+            bool centered = _textPlacement == TutorialTextPlacement.AboveTargetCentered
+                || _textPlacement == TutorialTextPlacement.BelowTargetCentered;
             Rect anchorRect = _textAnchor.rect;
             Vector3 edge = new Vector3(
                 anchorRect.center.x * _textAnchorScale.x,
@@ -522,9 +525,9 @@ namespace ETEngine.TutorialSystem
             float y = above
                 ? local.y + _textOffset - bounds.min.y * scale.y
                 : local.y - _textOffset - bounds.max.y * scale.y;
-            float x = local.x - bounds.center.x * scale.x;
-
             Rect area = parentRect.rect;
+            float x = (centered ? area.center.x : local.x) - bounds.center.x * scale.x;
+
             float left = x + bounds.min.x * scale.x;
             float right = x + bounds.max.x * scale.x;
             if (right - left <= area.width)

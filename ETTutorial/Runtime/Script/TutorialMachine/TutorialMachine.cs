@@ -556,5 +556,8 @@ namespace ETEngine.TutorialSystem
         Fixed,
         AboveTarget,
         BelowTarget,
+        // Same heights as above, but centred on the screen instead of on the target.
+        AboveTargetCentered,
+        BelowTargetCentered,
     }
 }
