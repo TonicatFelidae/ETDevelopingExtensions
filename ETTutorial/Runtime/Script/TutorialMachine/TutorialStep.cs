@@ -23,6 +23,8 @@ namespace ETEngine.TutorialSystem
         public float spotLightRadius;
         public bool showText;
         public string instructionText;
+        public TutorialTextPlacement textPlacement;
+        public float textOffset;
         public bool showPopup;
         public GameObject pp_popup;
         public bool showOverlay;

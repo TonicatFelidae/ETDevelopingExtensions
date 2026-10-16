@@ -25,6 +25,8 @@ namespace ETEngine.TutorialSystem
             SerializedProperty spotLightRadiusProp = property.FindPropertyRelative("spotLightRadius");
             SerializedProperty showTextProp = property.FindPropertyRelative("showText");
             SerializedProperty instructionTextProp = property.FindPropertyRelative("instructionText");
+            SerializedProperty textPlacementProp = property.FindPropertyRelative("textPlacement");
+            SerializedProperty textOffsetProp = property.FindPropertyRelative("textOffset");
             SerializedProperty showPopupProp = property.FindPropertyRelative("showPopup");
             SerializedProperty popupPrefabProp = property.FindPropertyRelative("pp_popup");
             SerializedProperty showOverlayProp = property.FindPropertyRelative("showOverlay");
@@ -72,6 +74,11 @@ namespace ETEngine.TutorialSystem
             if (showTextProp != null && showTextProp.boolValue)
             {
                 DrawField(ref rect, instructionTextProp, spacing);
+                DrawField(ref rect, textPlacementProp, spacing);
+                if (textPlacementProp != null && (TutorialTextPlacement)textPlacementProp.enumValueIndex != TutorialTextPlacement.Fixed)
+                {
+                    DrawField(ref rect, textOffsetProp, spacing);
+                }
             }
 
             DrawField(ref rect, showPopupProp, spacing);
@@ -167,6 +174,12 @@ namespace ETEngine.TutorialSystem
             if (showTextProp != null && showTextProp.boolValue)
             {
                 height += GetFieldHeight(property.FindPropertyRelative("instructionText"), spacing);
+                SerializedProperty textPlacementProp = property.FindPropertyRelative("textPlacement");
+                height += GetFieldHeight(textPlacementProp, spacing);
+                if (textPlacementProp != null && (TutorialTextPlacement)textPlacementProp.enumValueIndex != TutorialTextPlacement.Fixed)
+                {
+                    height += GetFieldHeight(property.FindPropertyRelative("textOffset"), spacing);
+                }
             }
 
             height += GetFieldHeight(property.FindPropertyRelative("showPopup"), spacing);

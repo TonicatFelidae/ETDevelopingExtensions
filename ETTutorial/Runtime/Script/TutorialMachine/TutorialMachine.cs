@@ -239,7 +239,12 @@ namespace ETEngine.TutorialSystem
 
             if (TutorialBackdrop.Instance != null)
             {
-                TutorialBackdrop.Instance.SetTutorialText(currentStep.showText, currentStep.instructionText);
+                TutorialBackdrop.Instance.SetTutorialText(
+                    currentStep.showText,
+                    currentStep.instructionText,
+                    currentStep.textPlacement,
+                    currentStep.target != null ? currentStep.target.transform as RectTransform : null,
+                    currentStep.textOffset);
             }
 
             EnableStepOverlay(currentStep);
@@ -545,5 +550,14 @@ namespace ETEngine.TutorialSystem
         Transparent,
         Dimmed,
 
+    }
+    public enum TutorialTextPlacement
+    {
+        Fixed,
+        AboveTarget,
+        BelowTarget,
+        // Same heights as above, but centred on the screen instead of on the target.
+        AboveTargetCentered,
+        BelowTargetCentered,
     }
 }

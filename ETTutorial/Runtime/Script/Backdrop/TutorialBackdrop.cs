@@ -38,10 +38,24 @@ namespace ETEngine.TutorialSystem
         private bool _originalOverrideSorting;
         private string _originalSortingLayerName;
         private int _originalSortingLayerID;
+
+        private Vector2 _textDefaultAnchoredPosition;
+        private TutorialTextAnimation _textAnimation;
+        private bool _isTextAnchored;
+        private RectTransform _textAnchor;
+        private Vector3 _textAnchorScale;
+        private TutorialTextPlacement _textPlacement;
+        private float _textOffset;
         void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
             _tutorialText.gameObject.SetActive(false);
+            _textDefaultAnchoredPosition = _tutorialText.rectTransform.anchoredPosition;
+            _textAnimation = _tutorialText.GetComponent<TutorialTextAnimation>();
+            if (_textAnimation != null)
+            {
+                _textAnimation.ApplyBob = false;
+            }
 
             if (backdropCanvas == null)
             {
@@ -398,10 +412,25 @@ namespace ETEngine.TutorialSystem
 
         public void SetTutorialText(bool show, string text)
         {
+            SetTutorialText(show, text, TutorialTextPlacement.Fixed, null, 0f);
+        }
+
+        public void SetTutorialText(bool show, string text, TutorialTextPlacement placement, RectTransform anchor, float offset)
+        {
             if (_tutorialText == null)
             {
                 return;
             }
+
+            // Callers re-activate the same step; restarting would replay the pop and flicker.
+            if (show && IsShowingTutorialText(text, placement, anchor, offset))
+            {
+                return;
+            }
+
+            _isTextAnchored = false;
+            _textAnchor = null;
+            _tutorialText.rectTransform.anchoredPosition = _textDefaultAnchoredPosition;
 
             if (!show || string.IsNullOrWhiteSpace(text))
             {
@@ -412,6 +441,126 @@ namespace ETEngine.TutorialSystem
 
             _tutorialText.text = text;
             _tutorialText.gameObject.SetActive(true);
+
+            if (placement != TutorialTextPlacement.Fixed && anchor != null)
+            {
+                _isTextAnchored = true;
+                _textAnchor = anchor;
+                _textAnchorScale = anchor.localScale;
+                _textPlacement = placement;
+                _textOffset = offset;
+                _tutorialText.ForceMeshUpdate();
+                UpdateTutorialTextPosition();
+            }
+
+            if (_textAnimation != null)
+            {
+                _textAnimation.Play();
+            }
+        }
+
+        private bool IsShowingTutorialText(string text, TutorialTextPlacement placement, RectTransform anchor, float offset)
+        {
+            if (string.IsNullOrWhiteSpace(text) || !_tutorialText.gameObject.activeSelf || _tutorialText.text != text)
+            {
+                return false;
+            }
+
+            bool anchored = placement != TutorialTextPlacement.Fixed && anchor != null;
+            if (anchored != _isTextAnchored)
+            {
+                return false;
+            }
+
+            return !anchored || (_textAnchor == anchor && _textPlacement == placement && Mathf.Approximately(_textOffset, offset));
+        }
+
+        private void LateUpdate()
+        {
+            if (_tutorialText == null || !_tutorialText.gameObject.activeInHierarchy)
+            {
+                return;
+            }
+
+            if (!_isTextAnchored)
+            {
+                _tutorialText.rectTransform.anchoredPosition = _textDefaultAnchoredPosition + new Vector2(0f, TextBobOffset);
+            }
+            else if (_textAnchor != null)
+            {
+                UpdateTutorialTextPosition();
+            }
+        }
+
+        // Anchor scale is frozen at SetTutorialText so a pulsing target does not drag the text along.
+        private void UpdateTutorialTextPosition()
+        {
+            RectTransform textRect = _tutorialText.rectTransform;
+            RectTransform parentRect = textRect.parent as RectTransform;
+            Transform anchorParent = _textAnchor.parent;
+            if (parentRect == null || anchorParent == null)
+            {
+                return;
+            }
+
+            bool above = _textPlacement == TutorialTextPlacement.AboveTarget
+                || _textPlacement == TutorialTextPlacement.AboveTargetCentered;
+            bool centered = _textPlacement == TutorialTextPlacement.AboveTargetCentered
+                || _textPlacement == TutorialTextPlacement.BelowTargetCentered;
+            Rect anchorRect = _textAnchor.rect;
+            Vector3 edge = new Vector3(
+                anchorRect.center.x * _textAnchorScale.x,
+                (above ? anchorRect.yMax : anchorRect.yMin) * _textAnchorScale.y,
+                0f);
+            Vector3 worldEdge = anchorParent.TransformPoint(_textAnchor.localPosition + _textAnchor.localRotation * edge);
+
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(GetCanvasCamera(_textAnchor.GetComponentInParent<Canvas>()), worldEdge);
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, GetCanvasCamera(backdropCanvas), out Vector2 local))
+            {
+                return;
+            }
+
+            Bounds bounds = _tutorialText.textBounds;
+            Vector3 scale = textRect.localScale;
+            float y = above
+                ? local.y + _textOffset - bounds.min.y * scale.y
+                : local.y - _textOffset - bounds.max.y * scale.y;
+            Rect area = parentRect.rect;
+            float x = (centered ? area.center.x : local.x) - bounds.center.x * scale.x;
+
+            float left = x + bounds.min.x * scale.x;
+            float right = x + bounds.max.x * scale.x;
+            if (right - left <= area.width)
+            {
+                if (left < area.xMin)
+                {
+                    x += area.xMin - left;
+                }
+                else if (right > area.xMax)
+                {
+                    x -= right - area.xMax;
+                }
+            }
+
+            textRect.localPosition = new Vector3(x, y + TextBobOffset, textRect.localPosition.z);
+        }
+
+        private float TextBobOffset => _textAnimation != null ? _textAnimation.BobOffset : 0f;
+
+        private Camera GetCanvasCamera(Canvas canvas)
+        {
+            Canvas root = canvas != null ? canvas.rootCanvas : null;
+            if (root == null || root.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                return null;
+            }
+
+            if (root.worldCamera != null)
+            {
+                return root.worldCamera;
+            }
+
+            return worldCamera != null ? worldCamera : Camera.main;
         }
 
         public void DisableBackdrop()
