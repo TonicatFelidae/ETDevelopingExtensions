@@ -23,6 +23,9 @@ namespace ETEngine.TutorialSystem
             get => tutorialSteps;
             set => tutorialSteps = value;
         }
+        /// <summary>The target of the step on screen; the only one a backdrop tap may pass through to.</summary>
+        public static TutorialTarget ActiveTarget { get; private set; }
+        private TutorialTarget _activatedTarget;
         private bool _isIgnoreTutorialFeedback = false;
         private bool _isTutorialCompleted = false;
         private int _currentStepIndex = -1;
@@ -205,6 +208,8 @@ namespace ETEngine.TutorialSystem
                 return;
             }
             var currentStep = tutorialSteps[index];
+            _activatedTarget = currentStep.target;
+            ActiveTarget = currentStep.target;
 
             if (currentStep.animateTarget && currentStep.target != null)
             {
@@ -497,6 +502,12 @@ namespace ETEngine.TutorialSystem
 
         private void CleanUpCurrentStepListeners()
         {
+            if (ActiveTarget == _activatedTarget)
+            {
+                ActiveTarget = null;
+            }
+            _activatedTarget = null;
+
             if (_delayTriggerCoroutine != null)
             {
                 StopCoroutine(_delayTriggerCoroutine);

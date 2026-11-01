@@ -23,6 +23,12 @@ namespace ETEngine.TutorialSystem
                 return;
             }
 
+            var activeTarget = TutorialMachine.ActiveTarget;
+            if (activeTarget == null)
+            {
+                return;
+            }
+
             bool forwarded = false;
 
             foreach (var result in results)
@@ -34,7 +40,7 @@ namespace ETEngine.TutorialSystem
 
                 var tutorialTarget = result.gameObject.GetComponentInParent<TutorialTarget>();
                 var targetButton = result.gameObject.GetComponentInParent<Button>();
-                if (tutorialTarget == null)
+                if (tutorialTarget == null || tutorialTarget != activeTarget)
                 {
                     continue;
                 }
@@ -44,7 +50,7 @@ namespace ETEngine.TutorialSystem
                     continue;
                 }
 
-                if (!targetButton.interactable)
+                if (!targetButton.IsActive() || !targetButton.IsInteractable())
                 {
                     continue;
                 }
